@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student API Docs</title>
+  </head>
+  <body>
+    <h1>Student API Docs</h1>
+    <hr>
+
+    <h2>/students</h2>
+
+    <div>
+      <h3>GET</h3>
+      <p>Returns all students</p>
+      <h4>Example response</h4>
+      <pre>
+[
+  {
+    id: 1,
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'John.Doe@quinnipiac.edu'
+  },
+  {
+    id: 2,
+    firstName: 'Billy',
+    lastName: 'Joe',
+    email: 'Billy.Joe@quinnipiac.edu'
+  }
+]
+      </pre>
+    </div>
+
+    <div>
+      <h3>POST</h3>
+      <p>Creates a new student</p>
+      <h4>Example request body</h4>
+      <pre>
+{ 
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'John.Doe@quinnipiac.edu'
+}
+      </pre>
+      <p>* firstName, lastName, and email fields are required</p>
+    </div>
+    <hr>
+
+    <h2>/students/&lt;id&gt;</h2>
+    <p>'id' of student must be provided in route</p>
+    <p>Example: /students/1 would specify student with 'id' value 1</p>
+    <p>If no student with specified 'id' value exists, an error is returned</p>
+
+    <div>
+      <h3>GET</h3>
+      <p>Returns the specified student</p>
+      <h4>Example response</h4>
+      <pre>
+{
+  id: 1,
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'John.Doe@quinnipiac.edu'
+}
+      </pre>
+    </div>
+
+    <div>
+      <h3>PUT</h3>
+      <p>Updates the specified student</p>
+      <h4>Example request body</h4>
+      <pre>
+{ 
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'John.Doe@quinnipiac.edu'
+}
+      </pre>
+      <p>* firstName, lastName, and email fields are required</p>
+    </div>
+
+    <div>
+      <h3>DELETE</h3>
+      <p>Deletes the specified student</p>
+      <p>Be careful -- student will be removed permanently!!!</p>
+    </div>
+
+  </body>
+</html>
+
+<style>
+body {
+  font-family: 'Arial';
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #000000;
+  color: #ffffff;
+}
+
+div {
+  border: solid 1px white;
+  border-radius: 5px;
+  padding: 10px;
+  width: 500px;
+  margin-bottom: 40px;
+  padding-left: 30px;
+}
+
+pre {
+  padding-left: 20px;
+}
+
+hr {
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+}
+</style>
+
