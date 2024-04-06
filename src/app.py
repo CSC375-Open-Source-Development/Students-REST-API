@@ -1,9 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
 import subprocess
 from .api.students_api import students_api
-from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -11,6 +10,10 @@ app = Flask(__name__)
 CORS(app)
 
 app.register_blueprint(students_api)
+
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({}), 200
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -28,9 +31,7 @@ def hello():
 
 @app.route('/docs', methods=['GET'])
 def docs():
-    with open('./resources/docs.html') as docs_html_file:
-        docs_html = BeautifulSoup(docs_html_file, 'html.parser')
-    return str(docs_html), 200
+    return render_template('docs.html')
 
 def get_wlan_ip():
     result = subprocess.run('ipconfig',stdout=subprocess.PIPE,text=True).stdout.lower()
@@ -50,4 +51,4 @@ def after_request(response):
 
 if __name__ == "__main__":
     print(f"IP Address: {get_wlan_ip()}")
-    app.run(host=get_wlan_ip(), port=5000,  threaded=True)
+    app.run(host='0.0.0.0', port=3000,  threaded=True)
