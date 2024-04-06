@@ -1,10 +1,24 @@
 from .sqlite_database import SqliteDatabase
 import os
+import uuid
 
 class StudentDatabase(SqliteDatabase):
 
     def __init__(self):
         super().__init__(os.getenv('STUDENT_DATABASE'))
+
+    def does_username_exist(self, username):
+        users = self.run_query('SELECT * FROM Users WHERE username = ?', [username])
+        return not len(users.fetchall()) == 0
+
+    def insert_user(self, username):
+        token = uuid.uuid4()
+        self.run_non_query('INSERT INTO Users (username, token) VALUES (?, ?)', [username, str(token)])
+        return token
+
+    def is_token_valid(self, token):
+        users = self.run_query('SELECT id, username, token FROM Users WHERE token = ?', [token])
+        return len(users.fetchall()) == 1
 
     def student_row_to_json(self, student):
         return {
@@ -29,7 +43,8 @@ class StudentDatabase(SqliteDatabase):
         first_name = student['firstName']
         last_name = student['lastName']
         email = student['email']
-        self.run_non_query('INSERT INTO Students (first_name, last_name, email) VALUES (?, ?, ?)', [first_name, last_name, email])
+        result = self.run_non_query('INSERT INTO Students (first_name, last_name, email) VALUES (?, ?, ?)', [first_name, last_name, email])
+        return result.lastrowid
 
     def update_student(self, id, student):
         first_name = student['firstName']

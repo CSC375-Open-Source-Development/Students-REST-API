@@ -2,9 +2,50 @@
 <html>
   <head>
     <title>Student API Docs</title>
+    <style>
+      body {
+        font-family: 'Arial';
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #000000;
+        color: #ffffff;
+      }
+      
+      div {
+        border: solid 1px white;
+        border-radius: 5px;
+        padding: 10px;
+        width: 500px;
+        margin-bottom: 40px;
+        padding-left: 30px;
+      }
+      
+      pre {
+        padding-left: 20px;
+      }
+      
+      hr {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      button {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .token-input {
+        width: 300px;
+      }
+      </style>
   </head>
   <body>
     <h1>Student API Docs</h1>
+    <h2>/login</h2>
+    <button onclick="makeToken()">Create API Token</button>
+    <input id="token-input" class="token-input" type="text" readonly/>
     <hr>
 
     <h2>/students</h2>
@@ -85,36 +126,18 @@
       <p>Be careful -- student will be removed permanently!!!</p>
     </div>
 
+    <script>
+      const makeToken = () => {
+        const tokenInput = document.getElementById('token-input')
+        fetch('http://localhost:3000/token', {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(response => tokenInput.value = response.token)
+      }
+    </script>
   </body>
 </html>
 
-<style>
-body {
-  font-family: 'Arial';
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #000000;
-  color: #ffffff;
-}
 
-div {
-  border: solid 1px white;
-  border-radius: 5px;
-  padding: 10px;
-  width: 500px;
-  margin-bottom: 40px;
-  padding-left: 30px;
-}
-
-pre {
-  padding-left: 20px;
-}
-
-hr {
-  margin-left: 0;
-  margin-right: 0;
-  width: 100%;
-}
-</style>
 
