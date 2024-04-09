@@ -1,22 +1,9 @@
 {
     "version": 2,
-    "functions": {
-        "preBuild": {
-            "commands": [
-                {
-                    "command": "pip install -r requirements.txt"
-                },
-                {
-                    "command": "cd bin && python create-sqlite-db.py && cd .."
-                }  
-            ]
-        },
-        "postBuild": {
-            "commands": [
-                {
-                    "command": "python -m src.app"
-                }
-            ]   
-        }
-      }
+    "builds": [
+        { "src": "app.py", "use": "@vercel/python" }
+    ],
+    "routes": [
+        { "src": "/(.*)", "dest": "/app.py" }
+    ]
 }
