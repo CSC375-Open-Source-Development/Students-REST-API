@@ -4,6 +4,7 @@ from flask_expects_json import expects_json
 
 students_api = Blueprint('students_api', __name__)
 
+# Before any request to the below routes, verify that the token supplied in the header is valid
 @students_api.before_request
 def auth():
     try:
@@ -18,71 +19,86 @@ def auth():
         return jsonify({ 'error': 'missing or invalid token' }), 401
     
 @students_api.route('/students', methods=['GET', 'POST'])
-@expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string', 'format': 'email' }}})
+@expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string', 'format': 'email' }}}, ignore_for=['GET'])
 def students():
-    if request.method == 'GET':
-       return get_all_students()
-    elif request.method == 'POST':
-        body = request.get_json(force=True)
-        return create_student(body)
+    try:
+        if request.method == 'GET':
+            created_by = request.args.get('created_by')
+            email = request.args.get('email')
+            if created_by != None and email != None:
+                return jsonify({ 'error': 'cannot use both created_by and email query params in the same request' }), 400
+            if created_by != None:
+                return get_all_students_created_by_user(created_by)
+            elif email != None:
+                return get_all_students_by_email(email)
+            else:
+                return get_all_students()
+        elif request.method == 'POST':
+            body = request.get_json(force=True)
+            return create_student(body)
+    except Exception as e:
+        print(e)
+        return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
 def get_all_students():
-    try:
-        student_database = StudentDatabase()
-        students = student_database.get_all_students()
-        return jsonify(students), 200
-    except Exception as e:
-        return jsonify({ 'error': str(e) }), 500
+    student_database = StudentDatabase()
+    students = student_database.get_all_students()
+    return jsonify(students), 200
+    
+def get_all_students_created_by_user(username):
+    student_database = StudentDatabase()
+    students = student_database.get_all_students_created_by_user(username)
+    return jsonify(students), 200
+    
+def get_all_students_by_email(email):
+    student_database = StudentDatabase()
+    students = student_database.get_all_students_by_email(email)
+    return jsonify(students), 200
 
 def create_student(student):
-    try:
-        student_database = StudentDatabase()
-        id = student_database.insert_student(student)
-        student = student_database.get_student_by_id(id)
-        return jsonify(student), 201
-    except Exception as e:
-        return jsonify({ 'error': str(e) }), 500
+    student_database = StudentDatabase()
+    token = request.headers['Authorization'].strip()[7:]
+    user = student_database.get_user_by_token(token)
+    id = student_database.insert_student(student, user['username'])
+    student = student_database.get_student_by_id(id)
+    return jsonify(student), 201
 
 @students_api.route('/students/<id>', methods=['GET', 'PUT', 'DELETE'])
+@expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string', 'format': 'email' }}}, ignore_for=['GET', 'DELETE'])
 def students_id(id):
     try:
         student_database = StudentDatabase()
         student = student_database.get_student_by_id(id)
         if not student:
-            return jsonify({ 'error': f'Student Not Found: {id}' }), 404
+            return jsonify({ 'error': 'Student Not Found' }), 404
+        if request.method == 'GET':
+            return jsonify(student), 200
+        elif request.method == 'PUT':
+            body = request.get_json(force=True)
+            return update_student(id, body)
+        elif request.method == 'DELETE':
+            return delete_student(id, body)
     except Exception as e:
-        return jsonify({ 'error', str(e) }), 500
-
-    if request.method == 'GET':
-        return jsonify(student), 200
-
-    elif request.method == 'PUT':
-        body = request.get_json(force=True)
-        return update_student(id, body)
-    
-    elif request.method == 'DELETE':
-        return delete_student(id)
+        print(e)
+        return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
 def update_student(id, student):
-    try:
-        required_fields = ['firstName', 'lastName', 'email']
-        for required_field in required_fields:
-            if not required_field in student or not student[required_field]:
-                return jsonify({ 'error': f'missing \'{required_field}\' value in request' }), 400 
-    
-        student_database = StudentDatabase()
-        student_database.update_student(id, student)
-        return jsonify(student), 200
-    except Exception as e:
-        return jsonify({ 'error': str(e) }), 500
+    token = request.headers['Authorization'].strip()[7:]
+    user = student_database.get_user_by_token(token)
+    if user['username'] != student['createdBy']:
+        return jsonify({ 'message': 'you do not have permission to update this student' }), 403
+    student_database = StudentDatabase()
+    student_database.update_student(id, student)
+    return jsonify(student), 200
 
 
-def delete_student(id):
-    try:
-        student_database = StudentDatabase()
-        student_database.delete_student(id)
-        return jsonify({ 'message': f'Successfully deleted student {id}'}), 200
-    except Exception as e:
-        return jsonify({ 'error': str(e) }), 500
+def delete_student(id, student):
+    token = request.headers['Authorization'].strip()[7:]
+    user = student_database.get_user_by_token(token)
+    if user['username'] != student['createdBy']:
+        return jsonify({ 'message': 'you do not have permission to delete this student' }), 403
+    student_database = StudentDatabase()
+    student_database.delete_student(id)
+    return jsonify({ 'message': 'Successfully deleted student' }), 200
         
  
