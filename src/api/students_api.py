@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from ..database.student_database import StudentDatabase
 from flask_expects_json import expects_json
+import re
 
 students_api = Blueprint('students_api', __name__)
 
@@ -19,18 +20,13 @@ def auth():
         return jsonify({ 'error': 'missing or invalid token' }), 401
     
 @students_api.route('/students', methods=['GET', 'POST'])
-@expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string', 'format': 'email' }}}, ignore_for=['GET'])
+@expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string' }}}, ignore_for=['GET'])
 def students():
     try:
         if request.method == 'GET':
             created_by = request.args.get('created_by')
-            email = request.args.get('email')
-            if created_by != None and email != None:
-                return jsonify({ 'error': 'cannot use both created_by and email query params in the same request' }), 400
             if created_by != None:
                 return get_all_students_created_by_user(created_by)
-            elif email != None:
-                return get_all_students_by_email(email)
             else:
                 return get_all_students()
         elif request.method == 'POST':
@@ -49,55 +45,55 @@ def get_all_students_created_by_user(username):
     student_database = StudentDatabase()
     students = student_database.get_all_students_created_by_user(username)
     return jsonify(students), 200
-    
-def get_all_students_by_email(email):
-    student_database = StudentDatabase()
-    students = student_database.get_all_students_by_email(email)
-    return jsonify(students), 200
 
-def create_student(student):
+def create_student(request_body):
     student_database = StudentDatabase()
+    email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+    if not re.match(email_pattern, request_body['email']):
+        return jsonify({ 'error': 'invalid email address format' }), 400
+    if student_database.does_student_with_email_already_exist(request_body['email']):
+        return jsonify({ 'error': 'specified email is already assigned to another student' }), 400
     token = request.headers['Authorization'].strip()[7:]
     user = student_database.get_user_by_token(token)
-    id = student_database.insert_student(student, user['username'])
-    student = student_database.get_student_by_id(id)
-    return jsonify(student), 201
+    id = student_database.insert_student(request_body, user['username'])
+    created_student = student_database.get_student_by_id(id)
+    return jsonify(created_student), 201
 
 @students_api.route('/students/<id>', methods=['GET', 'PUT', 'DELETE'])
 @expects_json({ 'required': ['firstName', 'lastName', 'email'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string', 'format': 'email' }}}, ignore_for=['GET', 'DELETE'])
 def students_id(id):
     try:
         student_database = StudentDatabase()
-        student = student_database.get_student_by_id(id)
-        if not student:
+        existing_student = student_database.get_student_by_id(id)
+        if not existing_student:
             return jsonify({ 'error': 'Student Not Found' }), 404
         if request.method == 'GET':
-            return jsonify(student), 200
+            return jsonify(existing_student), 200
         elif request.method == 'PUT':
-            body = request.get_json(force=True)
-            return update_student(id, body)
+            request_body = request.get_json(force=True)
+            return update_student(id, existing_student, request_body)
         elif request.method == 'DELETE':
-            return delete_student(id, body)
+            return delete_student(id, existing_student)
     except Exception as e:
         print(e)
         return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
-def update_student(id, student):
+def update_student(id, existing_student, request_body):
+    student_database = StudentDatabase()
     token = request.headers['Authorization'].strip()[7:]
     user = student_database.get_user_by_token(token)
-    if user['username'] != student['createdBy']:
+    if user['username'] != existing_student['createdBy']:
         return jsonify({ 'message': 'you do not have permission to update this student' }), 403
+    student_database.update_student(id, request_body)
+    updated_student = student_database.get_student_by_id(id)
+    return jsonify(updated_student), 200
+
+def delete_student(id, existing_student):
     student_database = StudentDatabase()
-    student_database.update_student(id, student)
-    return jsonify(student), 200
-
-
-def delete_student(id, student):
     token = request.headers['Authorization'].strip()[7:]
     user = student_database.get_user_by_token(token)
-    if user['username'] != student['createdBy']:
+    if user['username'] != existing_student['createdBy']:
         return jsonify({ 'message': 'you do not have permission to delete this student' }), 403
-    student_database = StudentDatabase()
     student_database.delete_student(id)
     return jsonify({ 'message': 'Successfully deleted student' }), 200
         

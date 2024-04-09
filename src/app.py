@@ -16,11 +16,14 @@ app.register_blueprint(students_api)
 
 @app.errorhandler(400)
 def bad_request(error):
-    if isinstance(error.description, ValidationError):
-        original_error = error.description
-        return make_response(jsonify({'error': original_error.message}), 400)
-    # handle other "Bad Request"-errors
-    return error
+    try:
+        if isinstance(error.description, ValidationError):
+            original_error = error.description
+            return make_response(jsonify({'error': original_error.message}), 400)
+        return error
+    except Exception as e:
+        print(e)
+        return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
 @app.route('/', methods=['GET'])
 def index():
@@ -33,9 +36,13 @@ def ping():
 @app.route('/hello', methods=['POST'])
 @expects_json({ 'required': ['name'], 'properties': { 'name': { 'type': 'string', 'minLength': 1 }}})
 def hello():
-    body = request.get_json(force=True)
-    name = body['name']
-    return jsonify({ 'message': f'Hello, {name}!' }), 201
+    try:
+        body = request.get_json(force=True)
+        name = body['name']
+        return jsonify({ 'message': f'Hello, {name}!' }), 201
+    except Exception as e:
+        print(e)
+        return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
 @app.route('/users', methods=['POST'])
 @expects_json({ 'required': ['username'], 'properties': { 'username': { 'type': 'string', 'minLength': 1 }}})

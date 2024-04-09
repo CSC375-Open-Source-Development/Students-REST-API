@@ -61,6 +61,10 @@ class StudentDatabase(SqliteDatabase):
     def get_all_students_by_email(self, email):
         students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE email = ?', [email])
         return [self.student_row_to_json(student) for student in students]
+    
+    def does_student_with_email_already_exist(self, email):
+        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE email = ?', [email])
+        return len(students.fetchall()) > 0       
 
     def insert_student(self, student, username):
         first_name = student['firstName']
