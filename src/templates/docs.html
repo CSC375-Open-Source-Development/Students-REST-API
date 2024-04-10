@@ -5,30 +5,116 @@
     <style>
       body {
         font-family: 'Arial';
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: #000000;
-        color: #ffffff;
+        background: #BFBFBF;
+        padding-left: 20px;
+        /* color: #ffffff; */
       }
       
-      div {
+      /* div {
         border: solid 1px white;
         border-radius: 5px;
         padding: 10px;
         width: 500px;
         margin-bottom: 40px;
         padding-left: 30px;
+      } */
+
+      h1 {
+        color: #10403B;
+        font-size: 40px;
       }
-      
-      pre {
-        padding-left: 20px;
+
+      h2 {
+        color: #10403B;
+        font-size: 30px;
+      }
+
+      h3 {
+        color: #10403B;
+        font-size: 20px;
+      }
+
+      h4 {
+        color: #10403B;
+        font-size: 20px;
+        margin-bottom: 0px;
+        margin-top: 20px;
+      }
+
+      h5 {
+        color: #10403B;
       }
       
       hr {
         margin-left: 0;
         margin-right: 0;
         width: 100%;
+        border-color: #10403B;
+        border-style: dashed;
+        margin-top: 60px;
+        margin-bottom: 60px;
+      }
+
+      p {
+        color: #10403B;
+        font-size: 16px;
+      }
+
+      pre {
+        background: black;
+        padding: 15px !important;
+        width: fit-content;
+        border-radius: 4px;
+      }
+
+      /* desert scheme ported from vim to google prettify */
+      pre.prettyprint { display: block; background-color: black }
+      pre .nocode { background-color: none; color: #000 }
+      pre .str { color: #ffa0a0 } /* string  - pink */
+      pre .kwd { color: #f0e68c; font-weight: bold }
+      pre .com { color: #87ceeb } /* comment - skyblue */
+      pre .typ { color: #98fb98 } /* type    - lightgreen */
+      pre .lit { color: #cd5c5c } /* literal - darkred */
+      pre .pun { color: #fff }    /* punctuation */
+      pre .pln { color: #fff }    /* plaintext */
+      pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
+      pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
+      pre .atv { color: #ffa0a0 } /* attribute value - pink */
+      pre .dec { color: #98fb98 } /* decimal         - lightgreen */
+
+      /* Specify class=linenums on a pre to get line numbering */
+      ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+      li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+      /* Alternate shading for lines */
+      li.L1,li.L3,li.L5,li.L7,li.L9 { }
+
+      @media print {
+        pre.prettyprint { background-color: none }
+        pre .str, code .str { color: #060 }
+        pre .kwd, code .kwd { color: #006; font-weight: bold }
+        pre .com, code .com { color: #600; font-style: italic }
+        pre .typ, code .typ { color: #404; font-weight: bold }
+        pre .lit, code .lit { color: #044 }
+        pre .pun, code .pun { color: #440 }
+        pre .pln, code .pln { color: #000 }
+        pre .tag, code .tag { color: #006; font-weight: bold }
+        pre .atn, code .atn { color: #404 }
+        pre .atv, code .atv { color: #060 }
+      }
+
+      input {
+        color: #10403B;
+        font-weight: 600;
+        font-size: 16px;
+        height: 20px;
+      }
+
+      .textbox {
+        margin-left: 10px;
+      }
+
+      .token-textbox {
+        width: 400px;
       }
 
       button {
@@ -39,51 +125,188 @@
       .token-input {
         width: 300px;
       }
+
+      .terms-of-service-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .token-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .error-message {
+        color: rgb(153, 1, 1);
+        margin: 0px;
+        min-height: 18px;
+      }
+
+      .spinner {
+        border: 2px solid #f3f3f3; /* Light grey */
+        border-top: 2px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        animation: spin 1s linear infinite;
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .create-button-container {
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        width: fit-content;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .create-token-button {
+        font-size: 16px;
+        padding: 5px;
+      }
+
+      .auth-container {
+        margin-top: 50px;
+      }
+
+      .username-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .resource-group-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .resource-container {
+        display: flex;
+        flex-direction: column;
+        margin-right: auto;
+        margin-bottom: 50px;
+      }
+
+      .method {
+        text-decoration: underline;
+        margin: 0px;
+      }
+
+      .query-params-container {
+        border: 4px solid #10403B;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 10px;
+      }
+
+      .request-body-container {
+        border: 4px solid #10403B;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 10px;
+      }
+
+      .required {
+        color: rgb(153, 1, 1);
+      }
       </style>
   </head>
   <body>
-    <h1>Student API Docs</h1>
-    <h2>/login</h2>
-    <button onclick="makeToken()">Create API Token</button>
-    <input id="token-input" class="token-input" type="text" readonly/>
+    <h1>Student API Documentation</h1>
+    <div class="auth-container">
+      <h2>Auth</h2>
+      <p>In order to use this API, you must first register with a desired username and agree to the terms of service.</p>
+      <div class="username-container">
+        <p><strong>Choose username:</strong></p>
+        <input class="textbox" id="username-input" class="username-input" type="text"/>
+      </div>
+      <div class="terms-of-service-container">
+        <input id="terms-of-service-input" class="terms-of-service-input" type="checkbox"/>
+        <label for="terms-of-service-input">I agree to the&nbsp;<a href="www.google.com">terms of service</a></label>
+      </div>
+      <div class="create-button-container">
+        <button id="create-token-button" class="create-token-button" onclick="createToken()">Create API Token</button>
+        <div id="spinner" class="spinner"></div>
+      </div>
+      <div class="token-container">
+        <p>Token:</p>
+        <input class="textbox token-textbox" id="token-input" class="token-input" type="text" disabled/>
+      </div>
+      <p id="error-message" class="error-message"></p>
+      <p>Include the token as a header for requests to this API in order to authenticate:</p>
+      <pre class="prettyprint lang-js">{
+  Authorization: "Bearer &lt;your token here&gt;"
+}</pre>
+  </div>
     <hr>
-
     <h2>/students</h2>
-
-    <div>
-      <h3>GET</h3>
-      <p>Returns all students</p>
-      <h4>Example response</h4>
-      <pre>
-[
+    <div class="resource-group-container">
+      <div class="resource-container">
+        <h3 class="method">GET</h3>
+        <p>Returns all students in system.</p>
+        <h4>Example response</h4>
+        <pre class="prettyprint lang-js">[
   {
     id: 1,
     firstName: 'John',
     lastName: 'Doe',
-    email: 'John.Doe@quinnipiac.edu'
+    email: 'John.Doe@quinnipiac.edu',
+    major: 'Software Engineering'
+    createdBy: 'user1'
   },
   {
     id: 2,
     firstName: 'Billy',
     lastName: 'Joe',
-    email: 'Billy.Joe@quinnipiac.edu'
+    email: 'Billy.Joe@quinnipiac.edu',
+    major: 'Computer Science',
+    createdBy: 'user2'
   }
-]
-      </pre>
-    </div>
+]</pre>
+        <h4>Query Params</h4>
+        <div class="query-params-container">
+          <p><strong>Field:</strong> createdBy</p>
+          <p><strong>Description:</strong> filter results by user that created the student record</p>
+        </div>
+      </div>
 
-    <div>
-      <h3>POST</h3>
-      <p>Creates a new student</p>
-      <h4>Example request body</h4>
-      <pre>
-{ 
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'John.Doe@quinnipiac.edu'
-}
-      </pre>
-      <p>* firstName, lastName, and email fields are required</p>
+      <div class="resource-container">
+        <h3 class="method">POST</h3>
+        <p>Creates a new student record and adds it to the system.</p>
+        <h4>Request Body</h4>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> firstName<span class="required">*</span></p>
+          <p><strong>Description:</strong> first name of student</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> lastName<span class="required">*</span></p>
+          <p><strong>Description:</strong> last name of student</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> email<span class="required">*</span></p>
+          <p><strong>Description:</strong> student's email, must not be in use by another student record</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> major</p>
+          <p><strong>Description:</strong> student's major</p>
+        </div>
+      </div>
     </div>
     <hr>
 
@@ -96,7 +319,7 @@
       <h3>GET</h3>
       <p>Returns the specified student</p>
       <h4>Example response</h4>
-      <pre>
+      <pre class="prettyprint lang-js">
 {
   id: 1,
   firstName: 'John',
@@ -110,7 +333,7 @@
       <h3>PUT</h3>
       <p>Updates the specified student</p>
       <h4>Example request body</h4>
-      <pre>
+      <pre class="prettyprint lang-js">
 { 
   firstName: 'John',
   lastName: 'Doe',
@@ -125,15 +348,56 @@
       <p>Deletes the specified student</p>
       <p>Be careful -- student will be removed permanently!!!</p>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     <script>
-      const makeToken = () => {
+      const createToken = () => {
+        const createTokenButton = document.getElementById('create-token-button')
+        createTokenButton.disabled = true
+        const spinner = document.getElementById('spinner')
+        spinner.style.display = 'block'
+        const errorMessage = document.getElementById('error-message')
+        errorMessage.innerHTML = ''
+        const usernameInput = document.getElementById('username-input')
+        const termsOfServiceInput = document.getElementById('terms-of-service-input')
         const tokenInput = document.getElementById('token-input')
-        fetch('http://localhost:3000/token', {
-          method: 'POST'
-        })
-          .then(response => response.json())
-          .then(response => tokenInput.value = response.token)
+        tokenInput.disabled = true
+        tokenInput.readOnly = false
+        setTimeout(() => {
+          fetch('/users', {
+            method: 'POST',
+            body: JSON.stringify({
+              username: usernameInput.value,
+              agreedToTermsOfService: termsOfServiceInput.checked
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          })
+            .then((response) => {
+              if (response.status === 201) {
+                return response.json()
+              }
+              return response.json()
+                .then(error => {
+                  throw new Error(JSON.stringify(error))
+              })
+            })
+            .then(response => {
+              const tokenInput = document.getElementById('token-input')
+              tokenInput.disabled = false
+              tokenInput.value = response.token
+              tokenInput.readOnly = true
+            })
+            .catch(error => {
+              console.log(JSON.parse(error.message).error)
+              errorMessage.innerText = `ERROR: ${JSON.parse(error.message).error}`
+            })
+            .finally(() => {
+              createTokenButton.disabled = false
+              spinner.style.display = 'none'
+            })
+          }, 1000)
       }
     </script>
   </body>

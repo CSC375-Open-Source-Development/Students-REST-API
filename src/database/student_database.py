@@ -40,44 +40,47 @@ class StudentDatabase(SqliteDatabase):
             'firstName': student[1],
             'lastName': student[2],
             'email': student[3],
-            'createdBy': student[4]
+            'major': student[4],
+            'createdBy': student[5]
         }
         
     def get_all_students(self):
-        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students')
+        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students')
         return [self.student_row_to_json(student) for student in students]
     
     def get_all_students_created_by_user(self, username):
-        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE created_by = ?', [username])
+        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE created_by = ?', [username])
         return [self.student_row_to_json(student) for student in students]
 
     def get_student_by_id(self, id):
-        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE id = ?', [id])
+        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE id = ?', [id])
         results = students.fetchall()
         if len(results) > 0:
             return self.student_row_to_json(results[0])
         return None
     
     def get_all_students_by_email(self, email):
-        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE email = ?', [email])
+        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE email = ?', [email])
         return [self.student_row_to_json(student) for student in students]
     
     def does_student_with_email_already_exist(self, email):
-        students = self.run_query('SELECT id, first_name, last_name, email, created_by FROM Students WHERE email = ?', [email])
+        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE email = ?', [email])
         return len(students.fetchall()) > 0       
 
     def insert_student(self, student, username):
         first_name = student['firstName']
         last_name = student['lastName']
         email = student['email']
-        result = self.run_non_query('INSERT INTO Students (first_name, last_name, email, created_by) VALUES (?, ?, ?, ?)', [first_name, last_name, email, username])
+        major = student['major']
+        result = self.run_non_query('INSERT INTO Students (first_name, last_name, email, major, created_by) VALUES (?, ?, ?, ?, ?)', [first_name, last_name, email, major, username])
         return result.lastrowid
 
     def update_student(self, id, student):
         first_name = student['firstName']
         last_name = student['lastName']
         email = student['email']
-        self.run_non_query('UPDATE Students SET first_name = ?, last_name = ?, email = ? WHERE id = ?', [first_name, last_name, email, id])
+        major = student['major']
+        self.run_non_query('UPDATE Students SET first_name = ?, last_name = ?, email = ?, major = ? WHERE id = ?', [first_name, last_name, email, major, id])
 
     def delete_student(self, id):
         self.run_non_query('DELETE FROM Students WHERE id = ?', [id])

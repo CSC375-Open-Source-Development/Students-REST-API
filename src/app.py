@@ -45,10 +45,16 @@ def hello():
         return jsonify({ 'error': 'there was a problem processing your request' }), 500
 
 @app.route('/users', methods=['POST'])
-@expects_json({ 'required': ['username'], 'properties': { 'username': { 'type': 'string', 'minLength': 1 }}})
-def token():
+@expects_json({ 'required': ['username', 'agreedToTermsOfService'], 'properties': { 'username': { 'type': 'string' }, 'agreedToTermsOfService': { 'type': 'boolean' }}})
+def users():
     try:
         body = request.get_json(force=True)
+        if not body['agreedToTermsOfService']:
+            return jsonify({ 'error': 'terms of service must be agreed to' }), 400
+        
+        if not body['username']:
+            return jsonify({ 'error': 'missing username' }), 400
+        
         student_database = StudentDatabase()
         if student_database.does_username_exist(body['username']):
             return jsonify({ 'error': 'username already exists' }), 400
