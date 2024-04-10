@@ -184,6 +184,13 @@
         margin-top: 50px;
       }
 
+      .auth-form-container {
+        border: 4px solid #10403B;
+        border-radius: 4px;
+        padding: 20px;
+        width: fit-content;
+      }
+
       .username-container {
         display: flex;
         flex-direction: row;
@@ -222,6 +229,14 @@
         margin-top: 10px;
       }
 
+      .route-params-container {
+        border: 4px solid #10403B;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 40px;
+      }
+
       .required {
         color: rgb(153, 1, 1);
       }
@@ -232,23 +247,25 @@
     <div class="auth-container">
       <h2>Auth</h2>
       <p>In order to use this API, you must first register with a desired username and agree to the terms of service.</p>
-      <div class="username-container">
-        <p><strong>Choose username:</strong></p>
-        <input class="textbox" id="username-input" class="username-input" type="text"/>
+      <div class="auth-form-container">
+        <div class="username-container">
+          <p><strong>Choose username:</strong></p>
+          <input class="textbox" id="username-input" class="username-input" type="text"/>
+        </div>
+        <div class="terms-of-service-container">
+          <input id="terms-of-service-input" class="terms-of-service-input" type="checkbox"/>
+          <label for="terms-of-service-input">I agree to the&nbsp;<a href="www.google.com">terms of service</a></label>
+        </div>
+        <div class="create-button-container">
+          <button id="create-token-button" class="create-token-button" onclick="createToken()">Create API Token</button>
+          <div id="spinner" class="spinner"></div>
+        </div>
+        <div class="token-container">
+          <p><strong>Token:</strong></p>
+          <input class="textbox token-textbox" id="token-input" class="token-input" type="text" disabled/>
+        </div>
+        <p id="error-message" class="error-message"></p>
       </div>
-      <div class="terms-of-service-container">
-        <input id="terms-of-service-input" class="terms-of-service-input" type="checkbox"/>
-        <label for="terms-of-service-input">I agree to the&nbsp;<a href="www.google.com">terms of service</a></label>
-      </div>
-      <div class="create-button-container">
-        <button id="create-token-button" class="create-token-button" onclick="createToken()">Create API Token</button>
-        <div id="spinner" class="spinner"></div>
-      </div>
-      <div class="token-container">
-        <p>Token:</p>
-        <input class="textbox token-textbox" id="token-input" class="token-input" type="text" disabled/>
-      </div>
-      <p id="error-message" class="error-message"></p>
       <p>Include the token as a header for requests to this API in order to authenticate:</p>
       <pre class="prettyprint lang-js">{
   Authorization: "Bearer &lt;your token here&gt;"
@@ -311,42 +328,52 @@
     <hr>
 
     <h2>/students/&lt;id&gt;</h2>
-    <p>'id' of student must be provided in route</p>
-    <p>Example: /students/1 would specify student with 'id' value 1</p>
-    <p>If no student with specified 'id' value exists, an error is returned</p>
 
-    <div>
-      <h3>GET</h3>
-      <p>Returns the specified student</p>
-      <h4>Example response</h4>
-      <pre class="prettyprint lang-js">
-{
+    <h4>Route Parameters</h4>
+    <div class="route-params-container">
+      <p><strong>Field:</strong> id</p>
+      <p><strong>Description:</strong> id value of student record</p>
+    </div>
+
+    <div class="resource-group-container">
+      <div class="resource-container">
+        <h3 class="method">GET</h3>
+        <p>Returns the specified student record.</p>
+        <h4>Example response</h4>
+        <pre class="prettyprint lang-js">{
   id: 1,
   firstName: 'John',
   lastName: 'Doe',
-  email: 'John.Doe@quinnipiac.edu'
-}
-      </pre>
-    </div>
+  email: 'John.Doe@quinnipiac.edu',
+  major: 'Computer Science'
+}</pre>
+      </div>
+      <div class="resource-container">
+        <h3 class="method">PUT</h3>
+        <p>Updates the specified student record. Only students that were created by the authenticated user can be updated.</p>
+        <h4>Request Body</h4>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> firstName<span class="required">*</span></p>
+          <p><strong>Description:</strong> first name of student</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> lastName<span class="required">*</span></p>
+          <p><strong>Description:</strong> last name of student</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> email<span class="required">*</span></p>
+          <p><strong>Description:</strong> student's email, must not be in use by another student record</p>
+        </div>
+        <div class="request-body-container">
+          <p><strong>Field:</strong> major<span class="required">*</p>
+          <p><strong>Description:</strong> student's major</p>
+        </div>
+      </div>
 
-    <div>
-      <h3>PUT</h3>
-      <p>Updates the specified student</p>
-      <h4>Example request body</h4>
-      <pre class="prettyprint lang-js">
-{ 
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'John.Doe@quinnipiac.edu'
-}
-      </pre>
-      <p>* firstName, lastName, and email fields are required</p>
-    </div>
-
-    <div>
-      <h3>DELETE</h3>
-      <p>Deletes the specified student</p>
-      <p>Be careful -- student will be removed permanently!!!</p>
+      <div class="resource-container">
+        <h3 class="method">DELETE</h3>
+        <p>Deletes the specified student. Be careful -- student will be removed permanently!!! Only students that were created by the authenticated user can be deleted.</p>
+      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     <script>
