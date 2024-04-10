@@ -6,8 +6,8 @@ The `docs.html` file contains the REST API documentation for the Students routes
 The `/docs` route returns it so it can be viewed conveniently in a web browser.
 There are a few other non-student related routes defined in the `app.py` file that are used for testing.
 
-The Student data is kept in the SQLite database `Students.db`.
-I recommend using [DB Browser for SQLite](https://sqlitebrowser.org/) to look at its contents.
+The Student data is kept in a SQLite database `students.db` that can be created by the script located in the `bin` directory.
+I recommend using [DB Browser for SQLite](https://sqlitebrowser.org/) to look at its contents after creating it.
 
 # How to run this REST API Server
 
