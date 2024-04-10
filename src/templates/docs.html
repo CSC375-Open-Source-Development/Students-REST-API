@@ -234,6 +234,7 @@
   </head>
   <body>
     <h1>Student API Documentation</h1>
+    <p id="api-url-label"><strong>API URL:</strong></p>
     <div class="auth-container">
       <h2>Auth</h2>
       <p>In order to use this API, you must first register with a desired username and agree to the terms of service.</p>
@@ -367,6 +368,9 @@
     </div>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     <script>
+      const apiUrlLabel = document.getElementById('api-url-label')
+      apiUrlLabel.innerHTML = `<strong>API URL:</strong> http://${window.location.host}`
+
       const createToken = () => {
         const createTokenButton = document.getElementById('create-token-button')
         createTokenButton.disabled = true
