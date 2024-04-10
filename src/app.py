@@ -69,6 +69,10 @@ def users():
 def docs():
     return render_template('docs.html')
 
+@app.route('/terms-of-service', methods=['GET'])
+def terms_of_service():
+    return render_template('terms-of-service.html')
+
 def get_wlan_ip():
     result = subprocess.run('ipconfig',stdout=subprocess.PIPE,text=True).stdout.lower()
     scan = False
