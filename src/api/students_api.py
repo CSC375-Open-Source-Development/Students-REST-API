@@ -11,10 +11,7 @@ email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
 @students_api.before_request
 def auth():
     try:
-        bearer_token = request.headers['Authorization'].strip()
-        if bearer_token[0:7] != 'Bearer ':
-            return jsonify({ 'error': 'missing or invalid token' }), 401
-        token = bearer_token[7:]
+        token = request.headers['Authorization'].strip()
         student_database = StudentDatabase()
         if not student_database.is_token_valid(token):
             return jsonify({ 'error': 'missing or invalid token' }), 401

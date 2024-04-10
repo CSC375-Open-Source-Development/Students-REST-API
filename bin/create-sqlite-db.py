@@ -9,3 +9,5 @@ connection.execute('CREATE TABLE "Students" ( "id" INTEGER NOT NULL UNIQUE, "fir
 
 connection.execute('DROP TABLE IF EXISTS Users')
 connection.execute('CREATE TABLE "Users" ( "id" INTEGER NOT NULL UNIQUE, "username" TEXT NOT NULL UNIQUE, "token" TEXT NOT NULL, PRIMARY KEY("id" AUTOINCREMENT) )')
+
+connection.execute('INSERT INTO Students (first_name, last_name, email, major, created_by) VALUES ("Alex", "Thimineur", "arthimineur@quinnipiac.edu", "Computer Science", "a-r-t")')
