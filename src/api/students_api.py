@@ -63,7 +63,7 @@ def create_student(request_body):
     return jsonify(created_student), 201
 
 @students_api.route('/students/<id>', methods=['GET', 'PUT', 'DELETE'])
-@expects_json({ 'required': ['firstName', 'lastName', 'email', 'major'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string' }, 'major': { 'type': 'string' }}}, ignore_for=['GET', 'DELETE'])
+@expects_json({ 'required': ['firstName', 'lastName', 'email', 'major'], 'properties': { 'firstName': { 'type': 'string', 'minLength': 1 }, 'lastName': { 'type': 'string', 'minLength': 1 }, 'email': { 'type': 'string' }, 'major': { 'type': ['string', 'null'] }}}, ignore_for=['GET', 'DELETE'])
 def students_id(id):
     try:
         student_database = StudentDatabase()
@@ -85,6 +85,8 @@ def students_id(id):
 
 def update_student(id, existing_student, request_body):
     student_database = StudentDatabase()
+    if student_database.does_student_with_email_already_exist(request_body['email'], exclude=id):
+        return jsonify({ 'error': 'specified email is already assigned to another student' }), 400
     token = request.headers['Authorization'].strip()[7:]
     user = student_database.get_user_by_token(token)
     if user['username'] != existing_student['createdBy']:

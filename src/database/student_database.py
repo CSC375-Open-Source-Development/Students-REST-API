@@ -63,8 +63,15 @@ class StudentDatabase(SqliteDatabase):
         students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE email = ?', [email])
         return [self.student_row_to_json(student) for student in students]
     
-    def does_student_with_email_already_exist(self, email):
-        students = self.run_query('SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE email = ?', [email])
+    # exclude field is to pass an id of a student to not include in this check
+    # useful for PUT operation in the case the email of the given student has not changed -- it ensures it does not count itself as the email already existing
+    def does_student_with_email_already_exist(self, email, exclude=None):
+        query = 'SELECT id, first_name, last_name, email, major, created_by FROM Students WHERE email = ?'
+        params = [email]
+        if exclude:
+            query += ' AND id != ?'
+            params.append(exclude)
+        students = self.run_query(query, params)
         return len(students.fetchall()) > 0       
 
     def insert_student(self, student, username):
