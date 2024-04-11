@@ -23,7 +23,7 @@ def auth():
 def students():
     try:
         if request.method == 'GET':
-            created_by = request.args.get('created_by')
+            created_by = request.args.get('createdBy')
             if created_by != None:
                 return get_all_students_created_by_user(created_by)
             else:
@@ -51,7 +51,7 @@ def create_student(request_body):
         return jsonify({ 'error': 'invalid email address format' }), 400
     if student_database.does_student_with_email_already_exist(request_body['email']):
         return jsonify({ 'error': 'specified email is already assigned to another student' }), 400
-    token = request.headers['Authorization'].strip()[7:]
+    token = request.headers['Authorization'].strip()
     user = student_database.get_user_by_token(token)
     if 'major' not in request_body:
         request_body['major'] = None
@@ -84,7 +84,7 @@ def update_student(id, existing_student, request_body):
     student_database = StudentDatabase()
     if student_database.does_student_with_email_already_exist(request_body['email'], exclude=id):
         return jsonify({ 'error': 'specified email is already assigned to another student' }), 400
-    token = request.headers['Authorization'].strip()[7:]
+    token = request.headers['Authorization'].strip()
     user = student_database.get_user_by_token(token)
     if user['username'] != existing_student['createdBy']:
         return jsonify({ 'message': 'you do not have permission to update this student' }), 403
@@ -94,7 +94,7 @@ def update_student(id, existing_student, request_body):
 
 def delete_student(id, existing_student):
     student_database = StudentDatabase()
-    token = request.headers['Authorization'].strip()[7:]
+    token = request.headers['Authorization'].strip()
     user = student_database.get_user_by_token(token)
     if user['username'] != existing_student['createdBy']:
         return jsonify({ 'message': 'you do not have permission to delete this student' }), 403
